@@ -1,7 +1,6 @@
-using System;
+using Unity.XR.OpenVR;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.HID;
 
 public class Player : MonoBehaviour
 {
@@ -10,14 +9,20 @@ public class Player : MonoBehaviour
     
     [SerializeField] private float _movementSpeed = 10f;
     [SerializeField] private float _jumpSpeed = 2f;
-
+    [SerializeField] private float _maxVerticalLookAngle = 120f;
+    [SerializeField] private float _cameraLookSpeed = 10f;
+    
     private PlayerInputs _playerInputs;
     
     // GameObject Components 
-    private Rigidbody _rigidbody;
+    [SerializeField] private Rigidbody _rigidbody;
+    [SerializeField] private Grounder _grounder;
+    [SerializeField] private Transform _cameraFollowTransform;
 
     // Components
     private Mover _mover;
+    private Jumper _jumper;
+    private PlayerAndCameraRotator _cameraRotator;
 
     private void Awake()
     {
@@ -32,23 +37,31 @@ public class Player : MonoBehaviour
 
         _playerInputs = new PlayerInputs();
         _mover = new Mover(_playerInputs.PlayerControlls.Move, _rigidbody, _movementSpeed);
+        _jumper = new Jumper(_playerInputs.PlayerControlls.Jump, _rigidbody, _jumpSpeed, _grounder);
+        _cameraRotator = new PlayerAndCameraRotator(_playerInputs.PlayerControlls.Look, this.transform,
+            _cameraFollowTransform, _maxVerticalLookAngle, _cameraLookSpeed);
+
     }
 
     private void OnEnable()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+
         _playerInputs.PlayerControlls.Enable();
     }
 
     private void OnDisable()
     {
+        Cursor.lockState = CursorLockMode.None;
+
         _playerInputs.PlayerControlls.Disable();
     }
 
     private void Update()
     {
         _mover.Tick();
+        _cameraRotator.Tick(Time.deltaTime);
     }
-
 
     private void OnValidate()
     {
@@ -56,41 +69,10 @@ public class Player : MonoBehaviour
         {
             _rigidbody = this.GetComponent<Rigidbody>();
         }
+
+        if (_grounder == null)
+        {
+            _grounder = this.GetComponentInChildren<Grounder>();
+        }
     } 
-}
-
-public class Mover
-{
-    private InputAction _moveAction; // Movement Command
-    private Rigidbody _rigidbody; // Rigidbody to move
-    private readonly float _moveSpeed;
-    
-    private Vector3 _currentMoveInput = Vector3.zero;
-
-    public Mover(InputAction moveAction, Rigidbody rigidbody, float moveSpeed)
-    {
-        _moveAction = moveAction;
-        _rigidbody = rigidbody;
-        _moveSpeed = moveSpeed;
-
-        _moveAction.started += OnMoveAction;
-        _moveAction.performed += OnMoveAction;
-        _moveAction.canceled += OnMoveAction;
-    }
-    
-    public void Tick()
-    {
-        _rigidbody.velocity = _currentMoveInput * _moveSpeed;
-    }
-
-    private void OnMoveAction(InputAction.CallbackContext callbackContext)
-    {
-        var aux = callbackContext.ReadValue<Vector2>();
-        _currentMoveInput = new Vector3(aux.x, _rigidbody.velocity.y, aux.y);
-    }
-}
-
-public class Jumper
-{
-    
 }
