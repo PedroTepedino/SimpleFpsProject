@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
         
         //Set screen resolution for now 
         // TODO: put this on its appropriate place
-        Screen.SetResolution(1920, 1080, true, 60);
+        Screen.SetResolution(1920, 1080, true);
         
 
         _playerInputs = new PlayerInputs();
