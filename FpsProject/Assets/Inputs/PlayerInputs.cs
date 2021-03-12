@@ -41,6 +41,22 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Shoot"",
+                    ""type"": ""Button"",
+                    ""id"": ""724b0a42-2af3-42f4-b701-7488c14bcce3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""ChangeWeapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""b7071fba-508d-440e-ac62-cb453493e3ce"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -153,6 +169,88 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""161a1d39-288d-48c7-8459-5e94efcd9d84"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7d5afce9-6176-40f2-bd5b-2d9f064c3a38"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0671b55a-15be-4d64-b3d7-4e471d3d9ec7"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeWeapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5502b49c-c4b1-4c7f-a029-9af35d7e52a2"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeWeapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""MenuControlls"",
+            ""id"": ""91f6e09f-d534-4c50-a348-6f0dec4a145a"",
+            ""actions"": [
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""04879346-4532-44dc-9563-7ea9226bb906"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""7149256d-7b4d-46ec-8888-d24c4c1a5d79"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6ae88e53-ab50-4a83-9fbc-8ee776a0c1ae"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -164,6 +262,11 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
         m_PlayerControlls_Move = m_PlayerControlls.FindAction("Move", throwIfNotFound: true);
         m_PlayerControlls_Look = m_PlayerControlls.FindAction("Look", throwIfNotFound: true);
         m_PlayerControlls_Jump = m_PlayerControlls.FindAction("Jump", throwIfNotFound: true);
+        m_PlayerControlls_Shoot = m_PlayerControlls.FindAction("Shoot", throwIfNotFound: true);
+        m_PlayerControlls_ChangeWeapon = m_PlayerControlls.FindAction("ChangeWeapon", throwIfNotFound: true);
+        // MenuControlls
+        m_MenuControlls = asset.FindActionMap("MenuControlls", throwIfNotFound: true);
+        m_MenuControlls_Pause = m_MenuControlls.FindAction("Pause", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -216,6 +319,8 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
     private readonly InputAction m_PlayerControlls_Move;
     private readonly InputAction m_PlayerControlls_Look;
     private readonly InputAction m_PlayerControlls_Jump;
+    private readonly InputAction m_PlayerControlls_Shoot;
+    private readonly InputAction m_PlayerControlls_ChangeWeapon;
     public struct PlayerControllsActions
     {
         private @PlayerInputs m_Wrapper;
@@ -223,6 +328,8 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
         public InputAction @Move => m_Wrapper.m_PlayerControlls_Move;
         public InputAction @Look => m_Wrapper.m_PlayerControlls_Look;
         public InputAction @Jump => m_Wrapper.m_PlayerControlls_Jump;
+        public InputAction @Shoot => m_Wrapper.m_PlayerControlls_Shoot;
+        public InputAction @ChangeWeapon => m_Wrapper.m_PlayerControlls_ChangeWeapon;
         public InputActionMap Get() { return m_Wrapper.m_PlayerControlls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -241,6 +348,12 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                 @Jump.started -= m_Wrapper.m_PlayerControllsActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_PlayerControllsActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_PlayerControllsActionsCallbackInterface.OnJump;
+                @Shoot.started -= m_Wrapper.m_PlayerControllsActionsCallbackInterface.OnShoot;
+                @Shoot.performed -= m_Wrapper.m_PlayerControllsActionsCallbackInterface.OnShoot;
+                @Shoot.canceled -= m_Wrapper.m_PlayerControllsActionsCallbackInterface.OnShoot;
+                @ChangeWeapon.started -= m_Wrapper.m_PlayerControllsActionsCallbackInterface.OnChangeWeapon;
+                @ChangeWeapon.performed -= m_Wrapper.m_PlayerControllsActionsCallbackInterface.OnChangeWeapon;
+                @ChangeWeapon.canceled -= m_Wrapper.m_PlayerControllsActionsCallbackInterface.OnChangeWeapon;
             }
             m_Wrapper.m_PlayerControllsActionsCallbackInterface = instance;
             if (instance != null)
@@ -254,14 +367,59 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @Shoot.started += instance.OnShoot;
+                @Shoot.performed += instance.OnShoot;
+                @Shoot.canceled += instance.OnShoot;
+                @ChangeWeapon.started += instance.OnChangeWeapon;
+                @ChangeWeapon.performed += instance.OnChangeWeapon;
+                @ChangeWeapon.canceled += instance.OnChangeWeapon;
             }
         }
     }
     public PlayerControllsActions @PlayerControlls => new PlayerControllsActions(this);
+
+    // MenuControlls
+    private readonly InputActionMap m_MenuControlls;
+    private IMenuControllsActions m_MenuControllsActionsCallbackInterface;
+    private readonly InputAction m_MenuControlls_Pause;
+    public struct MenuControllsActions
+    {
+        private @PlayerInputs m_Wrapper;
+        public MenuControllsActions(@PlayerInputs wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Pause => m_Wrapper.m_MenuControlls_Pause;
+        public InputActionMap Get() { return m_Wrapper.m_MenuControlls; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MenuControllsActions set) { return set.Get(); }
+        public void SetCallbacks(IMenuControllsActions instance)
+        {
+            if (m_Wrapper.m_MenuControllsActionsCallbackInterface != null)
+            {
+                @Pause.started -= m_Wrapper.m_MenuControllsActionsCallbackInterface.OnPause;
+                @Pause.performed -= m_Wrapper.m_MenuControllsActionsCallbackInterface.OnPause;
+                @Pause.canceled -= m_Wrapper.m_MenuControllsActionsCallbackInterface.OnPause;
+            }
+            m_Wrapper.m_MenuControllsActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Pause.started += instance.OnPause;
+                @Pause.performed += instance.OnPause;
+                @Pause.canceled += instance.OnPause;
+            }
+        }
+    }
+    public MenuControllsActions @MenuControlls => new MenuControllsActions(this);
     public interface IPlayerControllsActions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnShoot(InputAction.CallbackContext context);
+        void OnChangeWeapon(InputAction.CallbackContext context);
+    }
+    public interface IMenuControllsActions
+    {
+        void OnPause(InputAction.CallbackContext context);
     }
 }
